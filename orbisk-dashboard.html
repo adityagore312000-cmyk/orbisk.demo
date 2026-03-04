@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orbisk Dashboard – Purchase Plan Concept</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #1a3d35;
+    --green-primary: #2d6a5a;
+    --green-accent: #3d8b6e;
+    --green-light: #e8f5f0;
+    --green-mid: #c2e0d4;
+    --teal-bright: #4db896;
+    --white: #ffffff;
+    --gray-50: #f8fafb;
+    --gray-100: #f0f4f3;
+    --gray-200: #e2eae7;
+    --gray-300: #c8d8d3;
+    --gray-400: #8fa8a0;
+    --gray-600: #4a6560;
+    --gray-800: #1e302d;
+    --red-soft: #e74c3c;
+    --red-light: #fdf0ef;
+    --orange: #f39c12;
+    --sidebar-w: 220px;
+    --header-h: 60px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--gray-50); color: var(--gray-800); height: 100vh; overflow: hidden; display: flex; }
+
+  /* SIDEBAR */
+  .sidebar { width: var(--sidebar-w); background: var(--green-dark); height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; }
+  .sidebar-logo { padding: 20px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .logo-text { font-size: 22px; font-weight: 700; color: var(--white); letter-spacing: -0.5px; }
+  .logo-text span { color: var(--teal-bright); }
+  .location-badge { display: flex; align-items: center; gap: 6px; margin-top: 10px; background: rgba(255,255,255,0.08); border-radius: 8px; padding: 7px 10px; cursor: pointer; transition: background 0.2s; }
+  .location-badge:hover { background: rgba(255,255,255,0.13); }
+  .location-badge .loc-icon { color: var(--teal-bright); font-size: 13px; }
+  .location-badge span { font-size: 12.5px; color: rgba(255,255,255,0.85); font-weight: 500; }
+  .location-badge .chev { margin-left: auto; opacity: 0.4; font-size: 10px; color: white; }
+  .nav-section { padding: 16px 12px 8px; flex: 1; overflow-y: auto; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 9px; cursor: pointer; transition: all 0.18s; margin-bottom: 2px; color: rgba(255,255,255,0.6); font-size: 13.5px; font-weight: 500; }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+  .nav-item.active { background: rgba(77,184,150,0.2); color: var(--white); }
+  .nav-item .nav-icon { width: 17px; text-align: center; font-size: 14px; flex-shrink: 0; }
+  .new-badge { margin-left: auto; background: var(--teal-bright); color: var(--green-dark); font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 20px; }
+  .nav-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 10px 10px; }
+  .sidebar-bottom { padding: 14px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+  .user-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 9px; cursor: pointer; }
+  .user-row:hover { background: rgba(255,255,255,0.07); }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--green-accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; }
+  .user-name { font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.9); }
+  .user-role { font-size: 11px; color: rgba(255,255,255,0.45); }
+
+  /* MAIN */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { height: var(--header-h); background: var(--white); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; padding: 0 28px; gap: 14px; flex-shrink: 0; }
+  .topbar-title { font-size: 17px; font-weight: 700; color: var(--gray-800); flex: 1; }
+  .topbar-sub { font-size: 13px; color: var(--gray-400); font-weight: 400; margin-left: 6px; }
+  .tab-toggle { display: flex; background: var(--gray-100); border-radius: 8px; padding: 3px; gap: 2px; }
+  .tab-btn { padding: 5px 14px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--gray-400); transition: all 0.18s; font-family: 'DM Sans', sans-serif; }
+  .tab-btn.active { background: var(--white); color: var(--gray-800); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .icon-btn { width: 36px; height: 36px; border-radius: 8px; background: var(--gray-100); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; transition: background 0.18s; }
+  .icon-btn:hover { background: var(--gray-200); }
+  .add-btn { display: flex; align-items: center; gap: 7px; background: var(--green-dark); color: white; border: none; padding: 8px 16px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.18s; font-family: 'DM Sans', sans-serif; }
+  .add-btn:hover { background: var(--green-primary); }
+
+  /* CONTENT */
+  .content { flex: 1; overflow-y: auto; padding: 24px 28px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* AI BANNER */
+  .ai-banner { display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, rgba(77,184,150,0.08), rgba(45,106,90,0.05)); border: 1px solid rgba(77,184,150,0.25); border-radius: 12px; padding: 13px 18px; margin-bottom: 22px; cursor: pointer; transition: all 0.2s; }
+  .ai-banner:hover { border-color: rgba(77,184,150,0.5); background: rgba(77,184,150,0.1); }
+  .ai-banner-icon { font-size: 20px; flex-shrink: 0; }
+  .ai-banner-text { flex: 1; font-size: 13.5px; color: var(--gray-800); }
+  .ai-banner-text strong { color: var(--green-primary); }
+  .ai-banner-arrow { color: var(--green-primary); font-size: 18px; }
+
+  /* SECTION TITLE */
+  .section-title { font-size: 14px; font-weight: 700; color: var(--gray-800); margin-bottom: 14px; }
+
+  /* TABLE */
+  .table-wrap { background: var(--white); border-radius: 14px; border: 1px solid var(--gray-200); overflow: hidden; margin-bottom: 28px; }
+  .table-header { display: grid; padding: 12px 18px; background: var(--gray-50); border-bottom: 1px solid var(--gray-200); font-size: 11.5px; font-weight: 700; color: var(--gray-400); letter-spacing: 0.3px; text-transform: uppercase; }
+  .ag { grid-template-columns: 2.5fr 1.2fr 1.5fr 1.2fr 1fr 1fr; }
+  .pg { grid-template-columns: 1.8fr 1fr 1fr 1.3fr 1fr 1.3fr 0.8fr; }
+  .table-row { display: grid; padding: 14px 18px; border-bottom: 1px solid var(--gray-100); align-items: center; transition: background 0.15s; cursor: pointer; }
+  .table-row:last-child { border-bottom: none; }
+  .table-row:hover { background: var(--gray-50); }
+  .row-desc { display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 500; color: var(--gray-800); }
+  .action-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .ai-grn { background: #e8f5f0; }
+  .ai-org { background: #fff3e0; }
+  .ai-blu { background: #e8f0fe; }
+  .ai-tea { background: #e0f7fa; }
+  .ai-pnk { background: #fce4ec; }
+  .cell-sm { font-size: 13px; color: var(--gray-600); }
+  .cell-date { font-size: 12.5px; color: var(--gray-400); font-family: 'DM Mono', monospace; }
+  .cell-days { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+  .s-dn { color: #27ae60; font-weight: 700; font-size: 13px; }
+  .s-up { color: var(--red-soft); font-weight: 700; font-size: 13px; }
+  .chip { display: inline-flex; align-items: center; background: var(--green-light); color: var(--green-primary); font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+  .chip.o { background: #fff3e0; color: #e67e22; }
+  .chip.b { background: #e8f0fe; color: #3b5bdb; }
+  .chip.t { background: #e0f7fa; color: #00838f; }
+
+  /* CARDS */
+  .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 28px; }
+  .scard { background: var(--white); border-radius: 16px; border: 1px solid var(--gray-200); overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; }
+  .scard:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.09); transform: translateY(-2px); }
+  .scard.nf { border: 2px solid rgba(77,184,150,0.4); }
+  .card-img { height: 150px; display: flex; align-items: center; justify-content: center; font-size: 52px; position: relative; }
+  .card-img.ci1 { background: linear-gradient(135deg, #8B6914, #C8900E); }
+  .card-img.ci2 { background: linear-gradient(135deg, #6B3A3A, #A04040); }
+  .card-img.ci3 { background: linear-gradient(135deg, #2d5a3d, #4a8a60); }
+  .card-img.ci4 { background: linear-gradient(135deg, #1a3d35, #3d8b6e); }
+  .card-img.ci5 { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+  .card-img.ci6 { background: linear-gradient(135deg, #8B6914, #d4a01a); }
+  .nf-badge { position: absolute; top: 10px; right: 10px; background: var(--teal-bright); color: var(--green-dark); font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 20px; }
+  .card-body { padding: 15px; }
+  .card-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .card-meta { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+  .cmr { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--gray-600); }
+  .cmr strong { color: var(--gray-800); }
+  .cmr .mi { font-size: 12px; color: var(--gray-400); }
+  .card-desc { font-size: 12.5px; color: var(--gray-600); line-height: 1.55; margin-bottom: 14px; min-height: 48px; }
+  .card-acts { display: flex; gap: 8px; }
+  .btn-rej { flex: 1; padding: 9px; background: transparent; border: 1.5px solid var(--gray-300); border-radius: 9px; font-size: 13px; font-weight: 600; color: var(--red-soft); cursor: pointer; transition: all 0.18s; font-family: 'DM Sans', sans-serif; }
+  .btn-rej:hover { background: var(--red-light); border-color: var(--red-soft); }
+  .btn-acc { flex: 1; padding: 9px; background: transparent; border: 1.5px solid var(--gray-300); border-radius: 9px; font-size: 13px; font-weight: 600; color: var(--green-primary); cursor: pointer; transition: all 0.18s; font-family: 'DM Sans', sans-serif; }
+  .btn-acc:hover { background: var(--green-light); border-color: var(--green-primary); }
+
+  /* PURCHASE PLAN PAGE */
+  .p-hero { background: linear-gradient(135deg, var(--green-dark) 0%, #2d6a5a 100%); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; display: flex; align-items: center; gap: 24px; position: relative; overflow: hidden; }
+  .p-hero::after { content: ''; position: absolute; right: -40px; top: -40px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,0.04); }
+  .hero-icon { width: 56px; height: 56px; background: rgba(255,255,255,0.12); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+  .hero-text { flex: 1; }
+  .hero-text h2 { font-size: 19px; font-weight: 700; color: white; margin-bottom: 4px; }
+  .hero-text p { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+  .hero-stats { display: flex; gap: 14px; position: relative; z-index: 1; }
+  .hstat { text-align: center; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 12px 16px; min-width: 80px; }
+  .hstat-val { font-size: 21px; font-weight: 800; color: var(--teal-bright); }
+  .hstat-lbl { font-size: 10.5px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+
+  /* FILTERS */
+  .filters-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .fsel { display: flex; align-items: center; gap: 6px; background: var(--white); border: 1.5px solid var(--gray-200); border-radius: 9px; padding: 8px 12px; font-size: 13px; font-weight: 500; color: var(--gray-800); cursor: pointer; transition: border-color 0.18s; font-family: 'DM Sans', sans-serif; }
+  .fsel:hover { border-color: var(--green-primary); }
+  .target-tog { display: flex; align-items: center; gap: 8px; margin-left: auto; background: var(--green-light); border: 1.5px solid var(--green-mid); border-radius: 9px; padding: 8px 14px; font-size: 13px; font-weight: 600; color: var(--green-primary); }
+  .tdot { width: 8px; height: 8px; background: var(--teal-bright); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+
+  /* PURCHASE TABLE CELLS */
+  .qty-s { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; color: var(--green-primary); }
+  .arrd { width: 18px; height: 18px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--green-primary); }
+  .qty-old { font-size: 11.5px; color: var(--gray-400); text-decoration: line-through; }
+  .wp-lo { font-size: 12.5px; font-weight: 600; color: #27ae60; }
+  .wp-md { font-size: 12.5px; font-weight: 600; color: var(--orange); }
+  .conf-wrap { display: flex; align-items: center; gap: 7px; }
+  .conf-bar { height: 5px; background: var(--gray-200); border-radius: 10px; flex: 1; overflow: hidden; min-width: 50px; }
+  .conf-fill { height: 100%; background: var(--teal-bright); border-radius: 10px; }
+  .conf-pct { font-size: 11.5px; font-weight: 700; color: var(--gray-600); white-space: nowrap; }
+  .approve-btn { display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--green-primary); background: var(--green-light); border: 1.5px solid var(--green-mid); border-radius: 8px; padding: 6px 10px; cursor: pointer; white-space: nowrap; transition: all 0.18s; font-family: 'DM Sans', sans-serif; justify-self: end; }
+  .approve-btn:hover { background: var(--green-mid); }
+
+  /* SUMMARY FOOTER */
+  .sum-footer { background: var(--white); border: 1px solid var(--gray-200); border-radius: 14px; padding: 18px 22px; display: flex; align-items: center; gap: 24px; margin-top: 4px; }
+  .sum-stat { display: flex; align-items: center; gap: 10px; }
+  .sum-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .si-g { background: var(--green-light); }
+  .si-b { background: #e8f0fe; }
+  .si-o { background: #fff3e0; }
+  .sum-val { font-size: 18px; font-weight: 800; color: var(--gray-800); }
+  .sum-lbl { font-size: 11.5px; color: var(--gray-400); margin-top: 1px; }
+  .export-btn { margin-left: auto; display: flex; align-items: center; gap: 7px; background: var(--green-dark); color: white; border: none; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.18s; font-family: 'DM Sans', sans-serif; }
+  .export-btn:hover { background: var(--green-primary); }
+
+  /* OVERVIEW STATS */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 14px; padding: 18px 20px; }
+  .stat-label { font-size: 11.5px; color: var(--gray-400); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px; }
+  .stat-value { font-size: 28px; font-weight: 800; color: var(--gray-800); line-height: 1; }
+  .stat-unit { font-size: 14px; font-weight: 500; color: var(--gray-400); }
+  .stat-change { font-size: 12px; margin-top: 5px; font-weight: 600; }
+  .sc-pos { color: #27ae60; }
+  .sc-neg { color: var(--red-soft); }
+
+  /* CHART */
+  .chart-section { background: var(--white); border: 1px solid var(--gray-200); border-radius: 14px; padding: 20px 22px; margin-bottom: 24px; }
+  .chart-title { font-size: 14px; font-weight: 700; color: var(--gray-800); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .legend { display: flex; gap: 14px; margin-left: auto; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--gray-400); }
+  .leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+  .bg { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .bar { width: 100%; border-radius: 4px 4px 0 0; cursor: pointer; transition: opacity 0.2s; }
+  .bar:hover { opacity: 0.75; }
+  .bar-a { background: var(--green-primary); }
+  .bar-f { background: transparent; border: 2px dashed var(--teal-bright); border-bottom: none; }
+  .bar-lbl { font-size: 10.5px; color: var(--gray-400); }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(3px); }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal { background: var(--white); border-radius: 18px; width: 480px; max-width: 95vw; padding: 28px; transform: translateY(16px); transition: transform 0.25s; box-shadow: 0 24px 64px rgba(0,0,0,0.18); position: relative; }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-close { position: absolute; top: 16px; right: 16px; width: 28px; height: 28px; border-radius: 50%; background: var(--gray-100); border: none; cursor: pointer; font-size: 14px; color: var(--gray-600); transition: background 0.18s; }
+  .modal-close:hover { background: var(--gray-200); }
+  .modal-title { font-size: 17px; font-weight: 700; color: var(--gray-800); margin-bottom: 5px; }
+  .modal-sub { font-size: 13px; color: var(--gray-400); line-height: 1.5; margin-bottom: 20px; }
+  .form-group { margin-bottom: 15px; }
+  .form-label { font-size: 12.5px; font-weight: 600; color: var(--gray-600); margin-bottom: 5px; display: block; }
+  .form-ctrl { width: 100%; border: 1.5px solid var(--gray-200); border-radius: 9px; padding: 10px 13px; font-size: 13.5px; color: var(--gray-800); background: var(--white); transition: border-color 0.18s; font-family: 'DM Sans', sans-serif; }
+  .form-ctrl:focus { outline: none; border-color: var(--green-primary); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-footer { display: flex; gap: 10px; margin-top: 22px; }
+  .btn-cancel { flex: 1; padding: 11px; background: transparent; border: 1.5px solid var(--gray-200); border-radius: 10px; font-size: 13.5px; font-weight: 600; color: var(--gray-600); cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .btn-cancel:hover { background: var(--gray-100); }
+  .btn-submit { flex: 2; padding: 11px; background: var(--green-dark); border: none; border-radius: 10px; font-size: 13.5px; font-weight: 700; color: white; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.18s; }
+  .btn-submit:hover { background: var(--green-primary); }
+
+  /* PURCHASE DETAIL MODAL */
+  .pd-img { height: 120px; display: flex; align-items: center; justify-content: center; font-size: 52px; border-radius: 12px; margin-bottom: 16px; background: linear-gradient(135deg, var(--green-dark), #3d8b6e); }
+  .d-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+  .d-stat { background: var(--gray-50); border-radius: 10px; padding: 12px; }
+  .d-stat-lbl { font-size: 11px; color: var(--gray-400); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+  .d-stat-val { font-size: 18px; font-weight: 800; color: var(--gray-800); }
+  .d-stat-val.g { color: var(--green-primary); }
+  .conf-section { background: var(--green-light); border-radius: 10px; padding: 13px; margin-bottom: 15px; }
+  .conf-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .conf-title { font-size: 12.5px; font-weight: 700; color: var(--green-primary); }
+  .conf-val { font-size: 14px; font-weight: 800; color: var(--green-primary); }
+  .cbar { height: 7px; background: var(--green-mid); border-radius: 10px; overflow: hidden; }
+  .cfill { height: 100%; background: var(--teal-bright); border-radius: 10px; }
+  .conf-note { font-size: 11.5px; color: var(--gray-400); margin-top: 6px; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 28px; right: 28px; background: var(--green-dark); color: white; padding: 14px 20px; border-radius: 12px; font-size: 13.5px; font-weight: 600; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); transform: translateY(80px); opacity: 0; transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1); z-index: 200; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 10px; }
+
+  /* PICTURE CARDS */
+  .pic-card { background: var(--white); border-radius: 12px; border: 1px solid var(--gray-200); overflow: hidden; cursor: pointer; transition: box-shadow 0.2s, transform 0.2s; }
+  .pic-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  .pic-img { height: 110px; display: flex; align-items: center; justify-content: center; }
+  .pic-body { padding: 10px 12px 12px; }
+  .pic-name { font-size: 13px; font-weight: 700; color: var(--gray-800); margin-bottom: 3px; }
+  .pic-meta { font-size: 11.5px; color: var(--gray-400); margin-bottom: 7px; font-family: 'DM Mono', monospace; }
+
+  /* INGREDIENT BAR ROWS */
+  .ingr-bar-row { display: flex; align-items: center; gap: 10px; }
+  .ingr-name { font-size: 12.5px; color: var(--gray-600); font-weight: 500; width: 110px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ingr-track { flex: 1; height: 8px; background: var(--gray-100); border-radius: 10px; overflow: hidden; }
+  .ingr-fill { height: 100%; border-radius: 10px; transition: width 1s ease; }
+  .ingr-val { font-size: 12px; font-weight: 700; color: var(--gray-800); min-width: 45px; text-align: right; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">orbi<span>sk</span></div>
+    <div class="location-badge">
+      <span class="loc-icon">📍</span>
+      <span>Orbisk Utrecht</span>
+      <span class="chev">▾</span>
+    </div>
+  </div>
+  <nav class="nav-section">
+    <div class="nav-item" id="nav-overview" onclick="showPage('overview')">
+      <span class="nav-icon">⊞</span> Overview
+    </div>
+    <div class="nav-item active" id="nav-actions" onclick="showPage('actions')">
+      <span class="nav-icon">⚡</span> Actions
+    </div>
+    <div class="nav-item" id="nav-pictures" onclick="showPage('pictures')">
+      <span class="nav-icon">🖼</span> Pictures
+    </div>
+    <div class="nav-item" id="nav-indetail" onclick="showPage('indetail')">
+      <span class="nav-icon">📊</span> In detail
+    </div>
+    <div class="nav-item" id="nav-impact" onclick="showPage('impact')">
+      <span class="nav-icon">📈</span> Impact
+    </div>
+    <div class="nav-item" id="nav-hqview" onclick="showPage('hqview')">
+      <span class="nav-icon">🏢</span> HQ view
+    </div>
+    <div class="nav-item" id="nav-guests" onclick="showPage('guests')">
+      <span class="nav-icon">👥</span> Guests
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-item" id="nav-purchase" onclick="showPage('purchase')" style="background:rgba(77,184,150,0.12);color:rgba(255,255,255,0.88);">
+      <span class="nav-icon">🛒</span> Purchase Plan
+      <span class="new-badge">NEW</span>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-item" onclick="">
+      <span class="nav-icon">⚙</span> Settings
+    </div>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-row">
+      <div class="avatar">KJ</div>
+      <div>
+        <div class="user-name">Kitchen Jan</div>
+        <div class="user-role">F&amp;B Manager</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Actions <span class="topbar-sub">— Track your impact</span></div>
+    <div class="tab-toggle">
+      <button class="tab-btn active" onclick="setTab(this)">Total</button>
+      <button class="tab-btn" onclick="setTab(this)">Per guest</button>
+    </div>
+    <button class="icon-btn">⬇</button>
+    <button class="add-btn" onclick="openModal('modal-action')">⚡ Add action</button>
+  </div>
+
+  <div class="content">
+
+    <!-- PAGE: ACTIONS -->
+    <div class="page active" id="page-actions">
+      <div class="ai-banner" onclick="showPage('suggestions')">
+        <span class="ai-banner-icon">🤖</span>
+        <div class="ai-banner-text">The Orbisk AI has prepared <strong>6 fresh action suggestions</strong> to reduce your waste.</div>
+        <span class="ai-banner-arrow">›</span>
+      </div>
+      <div class="section-title">Ongoing</div>
+      <div class="table-wrap">
+        <div class="table-header ag">
+          <span>Description</span><span>Focus</span><span>Monitor</span>
+          <span style="color:#3d8b6e">Start date ↕</span><span>Days left</span><span>Savings</span>
+        </div>
+        <div class="table-row ag" onclick="openModal('modal-action')">
+          <div class="row-desc"><div class="action-icon ai-grn">🔄</div>Turn bread into croutons</div>
+          <div><span class="chip">Bagels</span></div>
+          <div class="cell-sm">Orbisk Utrecht</div>
+          <div class="cell-date">05/03/2025</div>
+          <div class="cell-days">14</div>
+          <div class="s-dn">↘ −86%</div>
+        </div>
+        <div class="table-row ag" onclick="openModal('modal-action')">
+          <div class="row-desc"><div class="action-icon ai-org">🍽</div>Serve french fries in paper bags instead of...</div>
+          <div><span class="chip o">Fries +2</span></div>
+          <div class="cell-sm">Orbisk Utrecht</div>
+          <div class="cell-date">24/02/2025</div>
+          <div class="cell-days">24</div>
+          <div class="s-dn">↘ −11%</div>
+        </div>
+        <div class="table-row ag" onclick="openModal('modal-action')">
+          <div class="row-desc"><div class="action-icon ai-blu">⚖</div>Serve 100 grams instead of 125 grams per guest</div>
+          <div><span class="chip b">Blueberries</span></div>
+          <div class="cell-sm">Orbisk Utrecht</div>
+          <div class="cell-date">26/02/2025</div>
+          <div class="cell-days">123</div>
+          <div class="s-up">↗ +16%</div>
+        </div>
+      </div>
+      <div class="section-title">Finished</div>
+      <div class="table-wrap">
+        <div class="table-header ag">
+          <span>Description</span><span>Focus</span><span>Monitor</span>
+          <span style="color:#3d8b6e">Start date ↕</span><span>End date</span><span>Savings</span>
+        </div>
+        <div class="table-row ag">
+          <div class="row-desc"><div class="action-icon ai-grn">🔄</div>Buy sliced cucumber instead of whole ones</div>
+          <div><span class="chip">Cucumber</span></div>
+          <div class="cell-sm">Orbisk Utrecht</div>
+          <div class="cell-date">01/02/2025</div>
+          <div class="cell-date">14/02/2025</div>
+          <div class="s-dn">↘ −100%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: SUGGESTIONS -->
+    <div class="page" id="page-suggestions">
+      <div style="font-size:13px;color:var(--gray-400);margin-bottom:6px;">Actions › Suggestions</div>
+      <div class="section-title" style="font-size:18px;margin-bottom:4px;">Action Suggestions</div>
+      <p style="font-size:13px;color:var(--gray-400);margin-bottom:20px;">The Orbisk AI has turned your waste insights into clear, practical actions to help you cut costs and reduce waste.</p>
+      <div class="cards-grid">
+        <div class="scard">
+          <div class="card-img ci1">🥯</div>
+          <div class="card-body">
+            <div class="card-title">Bagels</div>
+            <div class="card-meta">
+              <div class="cmr"><span class="mi">📊</span> Average of <strong>12kg per week</strong> wasted</div>
+              <div class="cmr"><span class="mi">📍</span> Orbisk Utrecht</div>
+              <div class="cmr"><span class="mi">🔄</span> Repurpose food waste</div>
+            </div>
+            <div class="card-desc">Turn leftover bagels into croutons: cut into cubes, toss with oil and herbs, bake at 180°C for 10 minutes. Great as a topping for soups or salads.</div>
+            <div class="card-acts">
+              <button class="btn-rej" onclick="rejectCard(this)">✕ Reject</button>
+              <button class="btn-acc" onclick="openModal('modal-action')">✓ Set action</button>
+            </div>
+          </div>
+        </div>
+        <div class="scard">
+          <div class="card-img ci2">🌭</div>
+          <div class="card-body">
+            <div class="card-title">Sausages</div>
+            <div class="card-meta">
+              <div class="cmr"><span class="mi">📊</span> Average of <strong>€112 per week</strong> wasted</div>
+              <div class="cmr"><span class="mi">📍</span> Orbisk Utrecht</div>
+              <div class="cmr"><span class="mi">📅</span> Preparation forecasting</div>
+            </div>
+            <div class="card-desc">Prep 20 sausages instead of 30 per gastronomy tray.</div>
+            <div class="card-acts">
+              <button class="btn-rej" onclick="rejectCard(this)">✕ Reject</button>
+              <button class="btn-acc" onclick="openModal('modal-action')">✓ Set action</button>
+            </div>
+          </div>
+        </div>
+        <div class="scard">
+          <div class="card-img ci3">🍝</div>
+          <div class="card-body">
+            <div class="card-title">Pasta</div>
+            <div class="card-meta">
+              <div class="cmr"><span class="mi">📊</span> Average of <strong>34kg per week</strong> wasted</div>
+              <div class="cmr"><span class="mi">📍</span> Orbisk Utrecht</div>
+              <div class="cmr"><span class="mi">🍽</span> Adjust serving method</div>
+            </div>
+            <div class="card-desc">To reduce the amount of prepared pasta serve them in smaller plates instead of in gastronomy trays.</div>
+            <div class="card-acts">
+              <button class="btn-rej" onclick="rejectCard(this)">✕ Reject</button>
+              <button class="btn-acc" onclick="openModal('modal-action')">✓ Set action</button>
+            </div>
+          </div>
+        </div>
+        <!-- NEW: Purchase cards -->
+        <div class="scard nf">
+          <div class="card-img ci4" style="position:relative">🥩<span class="nf-badge">🛒 NEW</span></div>
+          <div class="card-body">
+            <div class="card-title">Beef</div>
+            <div class="card-meta">
+              <div class="cmr"><span class="mi">📊</span> Average of <strong>€168 per week</strong> wasted</div>
+              <div class="cmr"><span class="mi">📍</span> Orbisk Utrecht</div>
+              <div class="cmr" style="color:var(--teal-bright);font-weight:600;"><span class="mi">🛒</span> Purchase optimization</div>
+            </div>
+            <div class="card-desc">Order <strong style="color:var(--green-primary)">18kg next week</strong> instead of your usual 25kg. Based on 420 guests &amp; 8-week waste trend.</div>
+            <div class="card-acts">
+              <button class="btn-rej" onclick="rejectCard(this)">✕ Reject</button>
+              <button class="btn-acc" onclick="openPurchaseModal('Beef','🥩','18kg','25kg','€84','92','~0.5kg')">✓ Set action</button>
+            </div>
+          </div>
+        </div>
+        <div class="scard nf">
+          <div class="card-img ci5" style="position:relative">🐟<span class="nf-badge">🛒 NEW</span></div>
+          <div class="card-body">
+            <div class="card-title">Salmon</div>
+            <div class="card-meta">
+              <div class="cmr"><span class="mi">📊</span> Average of <strong>€94 per week</strong> wasted</div>
+              <div class="cmr"><span class="mi">📍</span> Orbisk Utrecht</div>
+              <div class="cmr" style="color:var(--teal-bright);font-weight:600;"><span class="mi">🛒</span> Purchase optimization</div>
+            </div>
+            <div class="card-desc">Order <strong style="color:var(--green-primary)">6kg next week</strong> instead of your usual 9kg. Lower guest count projected Mon–Wed.</div>
+            <div class="card-acts">
+              <button class="btn-rej" onclick="rejectCard(this)">✕ Reject</button>
+              <button class="btn-acc" onclick="openPurchaseModal('Salmon','🐟','6kg','9kg','€56','78','~0.8kg')">✓ Set action</button>
+            </div>
+          </div>
+        </div>
+        <div class="scard">
+          <div class="card-img ci6">🥐</div>
+          <div class="card-body">
+            <div class="card-title">Croissants</div>
+            <div class="card-meta">
+              <div class="cmr"><span class="mi">📊</span> Average of <strong>8kg per week</strong> wasted</div>
+              <div class="cmr"><span class="mi">📍</span> Orbisk Utrecht</div>
+              <div class="cmr"><span class="mi">📅</span> Reduce batch size</div>
+            </div>
+            <div class="card-desc">Bake in two smaller batches (morning &amp; 10am) instead of one large batch. Reduces end-of-day waste significantly.</div>
+            <div class="card-acts">
+              <button class="btn-rej" onclick="rejectCard(this)">✕ Reject</button>
+              <button class="btn-acc" onclick="openModal('modal-action')">✓ Set action</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: PURCHASE PLAN -->
+    <div class="page" id="page-purchase">
+      <div class="p-hero">
+        <div class="hero-icon">🛒</div>
+        <div class="hero-text">
+          <h2>Purchase Plan — Week of 10–17 March 2025</h2>
+          <p>AI-powered order quantities based on your waste history and 420 expected guests next week. Approve each item to lock it into your kitchen's plan and hit net-zero waste.</p>
+        </div>
+        <div class="hero-stats">
+          <div class="hstat"><div class="hstat-val">€438</div><div class="hstat-lbl">Est. savings</div></div>
+          <div class="hstat"><div class="hstat-val">~2%</div><div class="hstat-lbl">Proj. waste</div></div>
+          <div class="hstat"><div class="hstat-val">12kg</div><div class="hstat-lbl">CO₂ prevented</div></div>
+        </div>
+      </div>
+
+      <div class="filters-bar">
+        <button class="fsel">📅 Week: 10–17 Mar 2025 ▾</button>
+        <button class="fsel">📍 Orbisk Utrecht ▾</button>
+        <button class="fsel">All categories ▾</button>
+        <div class="target-tog"><div class="tdot"></div> Target: Net Zero Waste</div>
+      </div>
+
+      <div class="section-title">AI Purchase Recommendations</div>
+      <div class="table-wrap" style="margin-bottom:20px;">
+        <div class="table-header pg">
+          <span>Ingredient</span>
+          <span>Avg Wasted/wk</span>
+          <span>Usual Order</span>
+          <span>Suggested Qty ↓</span>
+          <span>Proj. Waste</span>
+          <span>AI Confidence</span>
+          <span></span>
+        </div>
+        <!-- Beef -->
+        <div class="table-row pg" onclick="openPurchaseModal('Beef','🥩','18kg','25kg','€84','92','~0.5kg')">
+          <div class="row-desc"><div class="action-icon ai-tea">🥩</div>Beef</div>
+          <div style="font-size:13px;font-weight:600;color:var(--red-soft);">7kg / €168</div>
+          <div class="cell-sm">25 kg</div>
+          <div><div class="qty-s"><div class="arrd">↓</div>18 kg <span class="qty-old">25kg</span></div></div>
+          <div><span class="wp-lo">✓ ~0.5kg</span></div>
+          <div><div class="conf-wrap"><div class="conf-bar"><div class="conf-fill" style="width:92%"></div></div><span class="conf-pct">92%</span></div></div>
+          <button class="approve-btn" onclick="event.stopPropagation();openPurchaseModal('Beef','🥩','18kg','25kg','€84','92','~0.5kg')">✓ Approve</button>
+        </div>
+        <!-- Pasta -->
+        <div class="table-row pg" onclick="openPurchaseModal('Pasta','🍝','46kg','80kg','€210','87','~2kg')">
+          <div class="row-desc"><div class="action-icon ai-tea">🍝</div>Pasta</div>
+          <div style="font-size:13px;font-weight:600;color:var(--red-soft);">34kg / €210</div>
+          <div class="cell-sm">80 kg</div>
+          <div><div class="qty-s"><div class="arrd">↓</div>46 kg <span class="qty-old">80kg</span></div></div>
+          <div><span class="wp-lo">✓ ~2kg</span></div>
+          <div><div class="conf-wrap"><div class="conf-bar"><div class="conf-fill" style="width:87%"></div></div><span class="conf-pct">87%</span></div></div>
+          <button class="approve-btn" onclick="event.stopPropagation();openPurchaseModal('Pasta','🍝','46kg','80kg','€210','87','~2kg')">✓ Approve</button>
+        </div>
+        <!-- Sausages -->
+        <div class="table-row pg" onclick="openPurchaseModal('Sausages','🌭','20 units','30 units','€96','95','~1 unit')">
+          <div class="row-desc"><div class="action-icon ai-tea">🌭</div>Sausages</div>
+          <div style="font-size:13px;font-weight:600;color:var(--red-soft);">€112/wk</div>
+          <div class="cell-sm">30 units</div>
+          <div><div class="qty-s"><div class="arrd">↓</div>20 units <span class="qty-old">30u</span></div></div>
+          <div><span class="wp-lo">✓ ~1 unit</span></div>
+          <div><div class="conf-wrap"><div class="conf-bar"><div class="conf-fill" style="width:95%"></div></div><span class="conf-pct">95%</span></div></div>
+          <button class="approve-btn" onclick="event.stopPropagation();openPurchaseModal('Sausages','🌭','20 units','30 units','€96','95','~1 unit')">✓ Approve</button>
+        </div>
+        <!-- Bagels -->
+        <div class="table-row pg" onclick="openPurchaseModal('Bagels','🥯','28kg','40kg','€36','89','~0.5kg')">
+          <div class="row-desc"><div class="action-icon ai-grn">🥯</div>Bagels</div>
+          <div style="font-size:13px;font-weight:600;color:var(--red-soft);">12kg / €36</div>
+          <div class="cell-sm">40 kg</div>
+          <div><div class="qty-s"><div class="arrd">↓</div>28 kg <span class="qty-old">40kg</span></div></div>
+          <div><span class="wp-lo">✓ ~0.5kg</span></div>
+          <div><div class="conf-wrap"><div class="conf-bar"><div class="conf-fill" style="width:89%"></div></div><span class="conf-pct">89%</span></div></div>
+          <button class="approve-btn" onclick="event.stopPropagation();openPurchaseModal('Bagels','🥯','28kg','40kg','€36','89','~0.5kg')">✓ Approve</button>
+        </div>
+        <!-- Salmon -->
+        <div class="table-row pg" onclick="openPurchaseModal('Salmon','🐟','6kg','9kg','€56','78','~0.8kg')">
+          <div class="row-desc"><div class="action-icon ai-pnk">🐟</div>Salmon</div>
+          <div style="font-size:13px;font-weight:600;color:var(--orange);">3kg / €94</div>
+          <div class="cell-sm">9 kg</div>
+          <div><div class="qty-s"><div class="arrd">↓</div>6 kg <span class="qty-old">9kg</span></div></div>
+          <div><span class="wp-md">⚠ ~0.8kg</span></div>
+          <div><div class="conf-wrap"><div class="conf-bar"><div class="conf-fill" style="width:78%"></div></div><span class="conf-pct">78%</span></div></div>
+          <button class="approve-btn" onclick="event.stopPropagation();openPurchaseModal('Salmon','🐟','6kg','9kg','€56','78','~0.8kg')">✓ Approve</button>
+        </div>
+        <!-- Blueberries -->
+        <div class="table-row pg" onclick="openPurchaseModal('Blueberries','🫐','4.2kg','5kg','€12','84','~0.1kg')">
+          <div class="row-desc"><div class="action-icon ai-blu">🫐</div>Blueberries</div>
+          <div style="font-size:13px;font-weight:600;color:var(--orange);">0.8kg / €12</div>
+          <div class="cell-sm">5 kg</div>
+          <div><div class="qty-s"><div class="arrd">↓</div>4.2 kg <span class="qty-old">5kg</span></div></div>
+          <div><span class="wp-lo">✓ ~0.1kg</span></div>
+          <div><div class="conf-wrap"><div class="conf-bar"><div class="conf-fill" style="width:84%"></div></div><span class="conf-pct">84%</span></div></div>
+          <button class="approve-btn" onclick="event.stopPropagation();openPurchaseModal('Blueberries','🫐','4.2kg','5kg','€12','84','~0.1kg')">✓ Approve</button>
+        </div>
+      </div>
+
+      <div class="sum-footer">
+        <div class="sum-stat"><div class="sum-icon si-g">💰</div><div><div class="sum-val">€438</div><div class="sum-lbl">Total est. savings next week</div></div></div>
+        <div class="sum-stat"><div class="sum-icon si-b">🌍</div><div><div class="sum-val">~12 kg</div><div class="sum-lbl">CO₂ emissions prevented</div></div></div>
+        <div class="sum-stat"><div class="sum-icon si-o">📦</div><div><div class="sum-val">~5 kg</div><div class="sum-lbl">Projected total waste</div></div></div>
+        <button class="export-btn">⬇ Export Purchase Plan PDF</button>
+      </div>
+    </div>
+
+    <!-- PAGE: OVERVIEW -->
+    <div class="page" id="page-overview">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total waste this week</div><div class="stat-value">47<span class="stat-unit"> kg</span></div><div class="stat-change sc-pos">↓ 12% vs last week</div></div>
+        <div class="stat-card"><div class="stat-label">Cost wasted</div><div class="stat-value">€<span style="font-size:22px">612</span></div><div class="stat-change sc-pos">↓ 8% vs last week</div></div>
+        <div class="stat-card"><div class="stat-label">CO₂ prevented (YTD)</div><div class="stat-value">2.1<span class="stat-unit"> t</span></div><div class="stat-change sc-pos">↑ on track</div></div>
+        <div class="stat-card"><div class="stat-label">Active actions</div><div class="stat-value">3</div><div class="stat-change sc-neg">+1 needs attention</div></div>
+      </div>
+      <div class="chart-section">
+        <div class="chart-title">Weekly Waste Trend (kg)
+          <div class="legend">
+            <div class="leg-item"><div class="leg-dot" style="background:var(--green-primary)"></div>Actual</div>
+            <div class="leg-item"><div class="leg-dot" style="background:var(--teal-bright)"></div>AI Forecast</div>
+          </div>
+        </div>
+        <div class="bar-chart">
+          <div class="bg"><div class="bar bar-a" style="height:70px"></div><div class="bar-lbl">W1</div></div>
+          <div class="bg"><div class="bar bar-a" style="height:88px"></div><div class="bar-lbl">W2</div></div>
+          <div class="bg"><div class="bar bar-a" style="height:62px"></div><div class="bar-lbl">W3</div></div>
+          <div class="bg"><div class="bar bar-a" style="height:95px"></div><div class="bar-lbl">W4</div></div>
+          <div class="bg"><div class="bar bar-a" style="height:74px"></div><div class="bar-lbl">W5</div></div>
+          <div class="bg"><div class="bar bar-a" style="height:58px"></div><div class="bar-lbl">W6</div></div>
+          <div class="bg"><div class="bar bar-a" style="height:47px"></div><div class="bar-lbl">W7</div></div>
+          <div class="bg"><div class="bar bar-a" style="height:50px"></div><div class="bar-lbl">W8</div></div>
+          <div class="bg"><div class="bar bar-f" style="height:28px"></div><div class="bar-lbl" style="color:var(--teal-bright)">W9*</div></div>
+          <div class="bg"><div class="bar bar-f" style="height:16px"></div><div class="bar-lbl" style="color:var(--teal-bright)">W10*</div></div>
+        </div>
+      </div>
+      <div class="ai-banner" onclick="showPage('purchase')">
+        <span class="ai-banner-icon">🛒</span>
+        <div class="ai-banner-text">🆕 Your <strong>Purchase Plan for next week</strong> is ready — save up to <strong>€438</strong> with AI-optimized order quantities targeting net-zero waste.</div>
+        <span class="ai-banner-arrow">›</span>
+      </div>
+    </div>
+
+
+    <!-- PAGE: PICTURES -->
+    <div class="page" id="page-pictures">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div><div class="section-title" style="margin-bottom:2px;">Waste Photo Log</div><div style="font-size:13px;color:var(--gray-400);">Every disposal captured automatically by the Orbi camera — timestamped and AI-categorized.</div></div>
+        <div style="display:flex;gap:10px;"><button class="fsel" style="font-size:12.5px;">📅 Today, 4 Mar 2025 ▾</button><button class="fsel" style="font-size:12.5px;">All categories ▾</button></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">
+        <div class="pic-card" onclick="showToast('📸 Full image view — feature in production.')"><div class="pic-img" style="background:linear-gradient(135deg,#5d4037,#8d6e63);font-size:36px;">🍝</div><div class="pic-body"><div class="pic-name">Pasta</div><div class="pic-meta">08:42 · 1.8 kg</div><span class="chip t" style="font-size:11px;padding:2px 7px;">Overproduction</span></div></div>
+        <div class="pic-card" onclick="showToast('📸 Full image view — feature in production.')"><div class="pic-img" style="background:linear-gradient(135deg,#8B6914,#c8900e);font-size:36px;">🥯</div><div class="pic-body"><div class="pic-name">Bagels</div><div class="pic-meta">09:15 · 2.3 kg</div><span class="chip" style="font-size:11px;padding:2px 7px;">Buffet leftover</span></div></div>
+        <div class="pic-card" onclick="showToast('📸 Full image view — feature in production.')"><div class="pic-img" style="background:linear-gradient(135deg,#1565c0,#42a5f5);font-size:36px;">🫐</div><div class="pic-body"><div class="pic-name">Blueberries</div><div class="pic-meta">10:00 · 0.4 kg</div><span class="chip b" style="font-size:11px;padding:2px 7px;">Plate waste</span></div></div>
+        <div class="pic-card" onclick="showToast('📸 Full image view — feature in production.')"><div class="pic-img" style="background:linear-gradient(135deg,#c62828,#ef5350);font-size:36px;">🌭</div><div class="pic-body"><div class="pic-name">Sausages</div><div class="pic-meta">11:30 · 1.2 kg</div><span class="chip o" style="font-size:11px;padding:2px 7px;">Overproduction</span></div></div>
+        <div class="pic-card" onclick="showToast('📸 Full image view — feature in production.')"><div class="pic-img" style="background:linear-gradient(135deg,#2d6a5a,#4db896);font-size:36px;">🥗</div><div class="pic-body"><div class="pic-name">Mixed Salad</div><div class="pic-meta">12:05 · 3.1 kg</div><span class="chip" style="font-size:11px;padding:2px 7px;">Buffet leftover</span></div></div>
+        <div class="pic-card" onclick="showToast('📸 Full image view — feature in production.')"><div class="pic-img" style="background:linear-gradient(135deg,#6a1a6a,#ab47bc);font-size:36px;">🍇</div><div class="pic-body"><div class="pic-name">Grapes</div><div class="pic-meta">12:18 · 0.6 kg</div><span class="chip b" style="font-size:11px;padding:2px 7px;">Plate waste</span></div></div>
+        <div class="pic-card" onclick="showToast('📸 Full image view — feature in production.')"><div class="pic-img" style="background:linear-gradient(135deg,#e65100,#ff9800);font-size:36px;">🍳</div><div class="pic-body"><div class="pic-name">Scrambled Eggs</div><div class="pic-meta">13:40 · 1.4 kg</div><span class="chip o" style="font-size:11px;padding:2px 7px;">Overproduction</span></div></div>
+        <div class="pic-card" onclick="showToast('📸 Full image view — feature in production.')"><div class="pic-img" style="background:linear-gradient(135deg,#1a3d35,#3d8b6e);font-size:36px;">🥩</div><div class="pic-body"><div class="pic-name">Beef Slices</div><div class="pic-meta">14:22 · 1.9 kg</div><span class="chip" style="font-size:11px;padding:2px 7px;">Buffet leftover</span></div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header" style="grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;"><span>Item</span><span>Time</span><span>Weight</span><span>Category</span><span>Waste Type</span></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc"><div class="action-icon ai-tea">🍝</div>Pasta</div><div class="cell-date">08:42</div><div class="cell-sm">1.8 kg</div><div><span class="chip t" style="font-size:11px;">Kitchen</span></div><div class="cell-sm">Overproduction</div></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc"><div class="action-icon ai-grn">🥯</div>Bagels</div><div class="cell-date">09:15</div><div class="cell-sm">2.3 kg</div><div><span class="chip" style="font-size:11px;">Buffet</span></div><div class="cell-sm">Leftover</div></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc"><div class="action-icon ai-blu">🫐</div>Blueberries</div><div class="cell-date">10:00</div><div class="cell-sm">0.4 kg</div><div><span class="chip b" style="font-size:11px;">Plate</span></div><div class="cell-sm">Guest waste</div></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc"><div class="action-icon ai-pnk">🌭</div>Sausages</div><div class="cell-date">11:30</div><div class="cell-sm">1.2 kg</div><div><span class="chip o" style="font-size:11px;">Kitchen</span></div><div class="cell-sm">Overproduction</div></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc"><div class="action-icon ai-grn">🥗</div>Mixed Salad</div><div class="cell-date">12:05</div><div class="cell-sm">3.1 kg</div><div><span class="chip" style="font-size:11px;">Buffet</span></div><div class="cell-sm">Leftover</div></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc"><div class="action-icon ai-org">🍳</div>Scrambled Eggs</div><div class="cell-date">13:40</div><div class="cell-sm">1.4 kg</div><div><span class="chip o" style="font-size:11px;">Kitchen</span></div><div class="cell-sm">Overproduction</div></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc"><div class="action-icon ai-tea">🥩</div>Beef Slices</div><div class="cell-date">14:22</div><div class="cell-sm">1.9 kg</div><div><span class="chip" style="font-size:11px;">Buffet</span></div><div class="cell-sm">Leftover</div></div>
+      </div>
+    </div>
+
+    <!-- PAGE: IN DETAIL -->
+    <div class="page" id="page-indetail">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div><div class="section-title" style="margin-bottom:2px;">Ingredient Deep Dive</div><div style="font-size:13px;color:var(--gray-400);">Per-ingredient waste trends, cost breakdown, and peak waste moments over the past 8 weeks.</div></div>
+        <button class="fsel">📅 Last 8 weeks ▾</button>
+      </div>
+      <div class="stats-grid" style="margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-label">Top wasted item</div><div class="stat-value" style="font-size:20px;">🍝 Pasta</div><div class="stat-change sc-neg">34 kg avg/week</div></div>
+        <div class="stat-card"><div class="stat-label">Highest cost waste</div><div class="stat-value" style="font-size:20px;">🥩 Beef</div><div class="stat-change sc-neg">€168 avg/week</div></div>
+        <div class="stat-card"><div class="stat-label">Most improved</div><div class="stat-value" style="font-size:20px;">🥒 Cucumber</div><div class="stat-change sc-pos">↓ 100% this month</div></div>
+        <div class="stat-card"><div class="stat-label">Peak waste day</div><div class="stat-value" style="font-size:20px;">Sunday</div><div class="stat-change sc-neg">+38% vs avg day</div></div>
+      </div>
+      <div class="chart-section" style="margin-bottom:18px;">
+        <div class="chart-title">Top 6 Wasted Ingredients — Avg kg/week
+          <div class="legend"><div class="leg-item"><div class="leg-dot" style="background:var(--red-soft)"></div>High</div><div class="leg-item"><div class="leg-dot" style="background:var(--orange)"></div>Medium</div><div class="leg-item"><div class="leg-dot" style="background:#27ae60"></div>Low</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="ingr-bar-row"><span class="ingr-name">🍝 Pasta</span><div class="ingr-track"><div class="ingr-fill" style="width:100%;background:var(--red-soft)"></div></div><span class="ingr-val">34 kg</span></div>
+          <div class="ingr-bar-row"><span class="ingr-name">🥯 Bagels</span><div class="ingr-track"><div class="ingr-fill" style="width:35%;background:var(--orange)"></div></div><span class="ingr-val">12 kg</span></div>
+          <div class="ingr-bar-row"><span class="ingr-name">🥩 Beef</span><div class="ingr-track"><div class="ingr-fill" style="width:21%;background:var(--orange)"></div></div><span class="ingr-val">7 kg</span></div>
+          <div class="ingr-bar-row"><span class="ingr-name">🌭 Sausages</span><div class="ingr-track"><div class="ingr-fill" style="width:14%;background:#27ae60"></div></div><span class="ingr-val">4.8 kg</span></div>
+          <div class="ingr-bar-row"><span class="ingr-name">🐟 Salmon</span><div class="ingr-track"><div class="ingr-fill" style="width:9%;background:#27ae60"></div></div><span class="ingr-val">3 kg</span></div>
+          <div class="ingr-bar-row"><span class="ingr-name">🫐 Blueberries</span><div class="ingr-track"><div class="ingr-fill" style="width:2%;background:#27ae60"></div></div><span class="ingr-val">0.8 kg</span></div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header" style="grid-template-columns:1.8fr 1fr 1fr 1fr 1fr 1fr;"><span>Ingredient</span><span>Avg kg/wk</span><span>Avg €/wk</span><span>Peak day</span><span>Waste type</span><span>Trend</span></div>
+        <div class="table-row" style="grid-template-columns:1.8fr 1fr 1fr 1fr 1fr 1fr;"><div class="row-desc"><div class="action-icon ai-tea">🍝</div>Pasta</div><div style="font-weight:700;color:var(--red-soft);">34 kg</div><div class="cell-sm">€204</div><div class="cell-sm">Sunday</div><div><span class="chip o" style="font-size:11px;">Overproduction</span></div><div class="s-up">↗ +8%</div></div>
+        <div class="table-row" style="grid-template-columns:1.8fr 1fr 1fr 1fr 1fr 1fr;"><div class="row-desc"><div class="action-icon ai-grn">🥯</div>Bagels</div><div style="font-weight:700;color:var(--orange);">12 kg</div><div class="cell-sm">€36</div><div class="cell-sm">Saturday</div><div><span class="chip" style="font-size:11px;">Buffet leftover</span></div><div class="s-dn">↘ −14%</div></div>
+        <div class="table-row" style="grid-template-columns:1.8fr 1fr 1fr 1fr 1fr 1fr;"><div class="row-desc"><div class="action-icon ai-tea">🥩</div>Beef</div><div style="font-weight:700;color:var(--orange);">7 kg</div><div class="cell-sm">€168</div><div class="cell-sm">Tuesday</div><div><span class="chip t" style="font-size:11px;">Overproduction</span></div><div class="s-dn">↘ −6%</div></div>
+        <div class="table-row" style="grid-template-columns:1.8fr 1fr 1fr 1fr 1fr 1fr;"><div class="row-desc"><div class="action-icon ai-pnk">🌭</div>Sausages</div><div style="font-weight:700;color:var(--orange);">4.8 kg</div><div class="cell-sm">€112</div><div class="cell-sm">Sunday</div><div><span class="chip o" style="font-size:11px;">Overproduction</span></div><div class="s-dn">↘ −18%</div></div>
+        <div class="table-row" style="grid-template-columns:1.8fr 1fr 1fr 1fr 1fr 1fr;"><div class="row-desc"><div class="action-icon ai-pnk">🐟</div>Salmon</div><div style="font-weight:700;color:#27ae60;">3 kg</div><div class="cell-sm">€94</div><div class="cell-sm">Wednesday</div><div><span class="chip b" style="font-size:11px;">Plate waste</span></div><div class="s-dn">↘ −3%</div></div>
+        <div class="table-row" style="grid-template-columns:1.8fr 1fr 1fr 1fr 1fr 1fr;"><div class="row-desc"><div class="action-icon ai-blu">🫐</div>Blueberries</div><div style="font-weight:700;color:#27ae60;">0.8 kg</div><div class="cell-sm">€12</div><div class="cell-sm">Monday</div><div><span class="chip b" style="font-size:11px;">Plate waste</span></div><div class="s-up">↗ +16%</div></div>
+        <div class="table-row" style="grid-template-columns:1.8fr 1fr 1fr 1fr 1fr 1fr;"><div class="row-desc"><div class="action-icon ai-grn">🥒</div>Cucumber</div><div style="font-weight:700;color:#27ae60;">0 kg</div><div class="cell-sm">€0</div><div class="cell-sm">—</div><div><span class="chip" style="font-size:11px;">—</span></div><div class="s-dn" style="color:#27ae60;">↘ −100%</div></div>
+      </div>
+    </div>
+
+    <!-- PAGE: IMPACT -->
+    <div class="page" id="page-impact">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div><div class="section-title" style="margin-bottom:2px;">Sustainability Impact</div><div style="font-size:13px;color:var(--gray-400);">CSRD-ready reporting — track CO₂, water, meals rescued, and cost savings year-to-date.</div></div>
+        <div style="display:flex;gap:10px;"><button class="fsel">📅 2025 YTD ▾</button><button class="export-btn" style="padding:8px 14px;font-size:12.5px;">⬇ Export ESG Report</button></div>
+      </div>
+      <div class="stats-grid" style="margin-bottom:22px;">
+        <div class="stat-card" style="border-top:3px solid #27ae60;"><div class="stat-label">🌿 CO₂ Prevented</div><div class="stat-value">2.1<span class="stat-unit"> t</span></div><div class="stat-change sc-pos">Equiv. 210 car trips</div></div>
+        <div class="stat-card" style="border-top:3px solid var(--teal-bright);"><div class="stat-label">💧 Water Saved</div><div class="stat-value">1.4<span class="stat-unit"> ML</span></div><div class="stat-change sc-pos">1.4 million litres</div></div>
+        <div class="stat-card" style="border-top:3px solid var(--orange);"><div class="stat-label">🍽 Meals Rescued</div><div class="stat-value">4,820</div><div class="stat-change sc-pos">↑ 3× vs last year</div></div>
+        <div class="stat-card" style="border-top:3px solid #3498db;"><div class="stat-label">💰 Total Cost Saved</div><div class="stat-value">€<span style="font-size:22px;">18.4K</span></div><div class="stat-change sc-pos">↑ 34% vs last year</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+        <div class="chart-section" style="margin-bottom:0;">
+          <div class="chart-title">Monthly Waste Reduced (kg)<div class="legend"><div class="leg-item"><div class="leg-dot" style="background:var(--green-primary)"></div>Waste kg</div></div></div>
+          <div class="bar-chart" style="height:100px;">
+            <div class="bg"><div class="bar bar-a" style="height:90px"></div><div class="bar-lbl">Jan</div></div>
+            <div class="bg"><div class="bar bar-a" style="height:76px"></div><div class="bar-lbl">Feb</div></div>
+            <div class="bg"><div class="bar bar-a" style="height:58px"></div><div class="bar-lbl">Mar</div></div>
+            <div class="bg"><div class="bar" style="height:40px;background:var(--gray-200);border-radius:4px 4px 0 0;"></div><div class="bar-lbl" style="color:var(--gray-400);">Apr*</div></div>
+            <div class="bg"><div class="bar" style="height:28px;background:var(--gray-200);border-radius:4px 4px 0 0;"></div><div class="bar-lbl" style="color:var(--gray-400);">May*</div></div>
+          </div>
+          <div style="font-size:11.5px;color:var(--gray-400);margin-top:6px;">* AI forecast based on active purchase plan</div>
+        </div>
+        <div class="chart-section" style="margin-bottom:0;">
+          <div class="chart-title">Waste by Category (this month)</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+            <div class="ingr-bar-row"><span class="ingr-name" style="width:130px;">🔄 Overproduction</span><div class="ingr-track"><div class="ingr-fill" style="width:52%;background:var(--red-soft)"></div></div><span class="ingr-val">52%</span></div>
+            <div class="ingr-bar-row"><span class="ingr-name" style="width:130px;">🍽 Buffet leftover</span><div class="ingr-track"><div class="ingr-fill" style="width:28%;background:var(--orange)"></div></div><span class="ingr-val">28%</span></div>
+            <div class="ingr-bar-row"><span class="ingr-name" style="width:130px;">🧑‍🍽 Plate waste</span><div class="ingr-track"><div class="ingr-fill" style="width:14%;background:#27ae60"></div></div><span class="ingr-val">14%</span></div>
+            <div class="ingr-bar-row"><span class="ingr-name" style="width:130px;">🗑 Spoilage</span><div class="ingr-track"><div class="ingr-fill" style="width:6%;background:var(--gray-400)"></div></div><span class="ingr-val">6%</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1fr;"><span>Month</span><span>Waste (kg)</span><span>Cost Saved (€)</span><span>CO₂ Prevented</span><span>Meals Rescued</span><span>vs Target</span></div>
+        <div class="table-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1fr;"><div class="row-desc">📅 January 2025</div><div class="cell-sm">312 kg</div><div class="cell-sm">€6,240</div><div class="cell-sm">749 kg CO₂</div><div class="cell-sm">1,820</div><div class="s-dn">↘ −22%</div></div>
+        <div class="table-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1fr;"><div class="row-desc">📅 February 2025</div><div class="cell-sm">278 kg</div><div class="cell-sm">€5,560</div><div class="cell-sm">667 kg CO₂</div><div class="cell-sm">1,620</div><div class="s-dn">↘ −31%</div></div>
+        <div class="table-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1fr;"><div class="row-desc">📅 March 2025 (partial)</div><div class="cell-sm">94 kg</div><div class="cell-sm">€1,880</div><div class="cell-sm">226 kg CO₂</div><div class="cell-sm">548</div><div class="s-dn">↘ −38%</div></div>
+      </div>
+    </div>
+
+    <!-- PAGE: HQ VIEW -->
+    <div class="page" id="page-hqview">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div><div class="section-title" style="margin-bottom:2px;">HQ View — All Locations</div><div style="font-size:13px;color:var(--gray-400);">Compare waste performance, savings, and active actions across all Orbisk-monitored properties.</div></div>
+        <div style="display:flex;gap:10px;"><button class="fsel">📅 This month ▾</button><button class="export-btn" style="padding:8px 14px;font-size:12.5px;">⬇ Export HQ Report</button></div>
+      </div>
+      <div class="stats-grid" style="margin-bottom:22px;">
+        <div class="stat-card"><div class="stat-label">Total locations</div><div class="stat-value">8</div><div class="stat-change sc-pos">Across 4 countries</div></div>
+        <div class="stat-card"><div class="stat-label">Best performer</div><div class="stat-value" style="font-size:20px;">Utrecht</div><div class="stat-change sc-pos">↓ 38% waste this month</div></div>
+        <div class="stat-card"><div class="stat-label">Needs attention</div><div class="stat-value" style="font-size:20px;">Amsterdam</div><div class="stat-change sc-neg">↑ +12% waste this week</div></div>
+        <div class="stat-card"><div class="stat-label">Total CO₂ saved</div><div class="stat-value">6.1<span class="stat-unit"> t</span></div><div class="stat-change sc-pos">All locations YTD</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.2fr 1fr;"><span>Location</span><span>Avg kg/week</span><span>Cost Saved/mo</span><span>Active Actions</span><span>CO₂ Prevented</span><span>Waste Trend</span><span>Status</span></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.2fr 1fr;"><div class="row-desc"><div class="action-icon ai-grn">🏨</div>Utrecht — Main Kitchen</div><div class="cell-sm">47 kg</div><div class="cell-sm">€1,880</div><div class="cell-sm">3</div><div class="cell-sm">226 kg</div><div class="s-dn">↘ −38%</div><div><span class="chip" style="font-size:11px;background:#e8f5f0;color:#27ae60;">✓ On track</span></div></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.2fr 1fr;"><div class="row-desc"><div class="action-icon ai-org">🏨</div>Amsterdam — Grand Hotel</div><div class="cell-sm">83 kg</div><div class="cell-sm">€1,240</div><div class="cell-sm">1</div><div class="cell-sm">199 kg</div><div class="s-up">↗ +12%</div><div><span class="chip o" style="font-size:11px;">⚠ Review</span></div></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.2fr 1fr;"><div class="row-desc"><div class="action-icon ai-blu">🏨</div>Rotterdam — City Catering</div><div class="cell-sm">61 kg</div><div class="cell-sm">€2,100</div><div class="cell-sm">4</div><div class="cell-sm">146 kg</div><div class="s-dn">↘ −24%</div><div><span class="chip" style="font-size:11px;background:#e8f5f0;color:#27ae60;">✓ On track</span></div></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.2fr 1fr;"><div class="row-desc"><div class="action-icon ai-tea">🏨</div>Brussels — Sofitel</div><div class="cell-sm">55 kg</div><div class="cell-sm">€1,650</div><div class="cell-sm">2</div><div class="cell-sm">132 kg</div><div class="s-dn">↘ −19%</div><div><span class="chip" style="font-size:11px;background:#e8f5f0;color:#27ae60;">✓ On track</span></div></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.2fr 1fr;"><div class="row-desc"><div class="action-icon ai-pnk">🏥</div>Leiden — LUMC Hospital</div><div class="cell-sm">38 kg</div><div class="cell-sm">€760</div><div class="cell-sm">2</div><div class="cell-sm">91 kg</div><div class="s-dn">↘ −42%</div><div><span class="chip" style="font-size:11px;background:#e8f5f0;color:#27ae60;">✓ On track</span></div></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.2fr 1fr;"><div class="row-desc"><div class="action-icon ai-org">🚢</div>MSC Cruise — Ship 1</div><div class="cell-sm">142 kg</div><div class="cell-sm">€4,260</div><div class="cell-sm">5</div><div class="cell-sm">341 kg</div><div class="s-dn">↘ −28%</div><div><span class="chip" style="font-size:11px;background:#e8f5f0;color:#27ae60;">✓ On track</span></div></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.2fr 1fr;"><div class="row-desc"><div class="action-icon ai-grn">🏢</div>Unilever — HQ Catering</div><div class="cell-sm">29 kg</div><div class="cell-sm">€870</div><div class="cell-sm">3</div><div class="cell-sm">70 kg</div><div class="s-dn">↘ −51%</div><div><span class="chip" style="font-size:11px;background:#e8f5f0;color:#27ae60;">✓ On track</span></div></div>
+        <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.2fr 1fr;"><div class="row-desc"><div class="action-icon ai-blu">🏢</div>Google Amsterdam — Cafeteria</div><div class="cell-sm">34 kg</div><div class="cell-sm">€1,020</div><div class="cell-sm">2</div><div class="cell-sm">82 kg</div><div class="s-dn">↘ −33%</div><div><span class="chip" style="font-size:11px;background:#e8f5f0;color:#27ae60;">✓ On track</span></div></div>
+      </div>
+    </div>
+
+    <!-- PAGE: GUESTS -->
+    <div class="page" id="page-guests">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div><div class="section-title" style="margin-bottom:2px;">Guest Analytics</div><div style="font-size:13px;color:var(--gray-400);">Understand how occupancy and guest count relate to your food waste patterns.</div></div>
+        <button class="fsel">📅 Last 4 weeks ▾</button>
+      </div>
+      <div class="stats-grid" style="margin-bottom:22px;">
+        <div class="stat-card"><div class="stat-label">Avg guests/day</div><div class="stat-value">420</div><div class="stat-change sc-pos">↑ +8% vs last month</div></div>
+        <div class="stat-card"><div class="stat-label">Waste per guest</div><div class="stat-value">112<span class="stat-unit"> g</span></div><div class="stat-change sc-pos">↓ −18g vs last month</div></div>
+        <div class="stat-card"><div class="stat-label">Cost waste/cover</div><div class="stat-value">€1.46</div><div class="stat-change sc-pos">↓ −€0.32 vs last month</div></div>
+        <div class="stat-card"><div class="stat-label">Occupancy this week</div><div class="stat-value">78<span class="stat-unit">%</span></div><div class="stat-change sc-pos">↑ from 71% last week</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+        <div class="chart-section" style="margin-bottom:0;">
+          <div class="chart-title">Waste per Guest (g) — This week</div>
+          <div class="bar-chart" style="height:100px;">
+            <div class="bg"><div class="bar bar-a" style="height:75px"></div><div class="bar-lbl">Mon</div></div>
+            <div class="bg"><div class="bar bar-a" style="height:88px"></div><div class="bar-lbl">Tue</div></div>
+            <div class="bg"><div class="bar bar-a" style="height:60px"></div><div class="bar-lbl">Wed</div></div>
+            <div class="bg"><div class="bar bar-a" style="height:95px"></div><div class="bar-lbl">Thu</div></div>
+            <div class="bg"><div class="bar bar-a" style="height:100px"></div><div class="bar-lbl">Fri</div></div>
+            <div class="bg"><div class="bar" style="height:90px;background:#f39c12;border-radius:4px 4px 0 0;"></div><div class="bar-lbl">Sat</div></div>
+            <div class="bg"><div class="bar" style="height:80px;background:var(--red-soft);border-radius:4px 4px 0 0;"></div><div class="bar-lbl">Sun</div></div>
+          </div>
+        </div>
+        <div class="chart-section" style="margin-bottom:0;">
+          <div class="chart-title">Guest Count — This week</div>
+          <div style="display:flex;flex-direction:column;gap:9px;margin-top:4px;">
+            <div class="ingr-bar-row"><span class="ingr-name" style="width:55px;">Mon</span><div class="ingr-track"><div class="ingr-fill" style="width:72%;background:var(--green-primary)"></div></div><span class="ingr-val">360 guests</span></div>
+            <div class="ingr-bar-row"><span class="ingr-name" style="width:55px;">Tue</span><div class="ingr-track"><div class="ingr-fill" style="width:84%;background:var(--green-primary)"></div></div><span class="ingr-val">420 guests</span></div>
+            <div class="ingr-bar-row"><span class="ingr-name" style="width:55px;">Wed</span><div class="ingr-track"><div class="ingr-fill" style="width:70%;background:var(--green-primary)"></div></div><span class="ingr-val">350 guests</span></div>
+            <div class="ingr-bar-row"><span class="ingr-name" style="width:55px;">Thu</span><div class="ingr-track"><div class="ingr-fill" style="width:90%;background:var(--green-primary)"></div></div><span class="ingr-val">450 guests</span></div>
+            <div class="ingr-bar-row"><span class="ingr-name" style="width:55px;">Fri</span><div class="ingr-track"><div class="ingr-fill" style="width:100%;background:var(--green-primary)"></div></div><span class="ingr-val">500 guests</span></div>
+            <div class="ingr-bar-row"><span class="ingr-name" style="width:55px;">Sat</span><div class="ingr-track"><div class="ingr-fill" style="width:96%;background:#f39c12"></div></div><span class="ingr-val">480 guests</span></div>
+            <div class="ingr-bar-row"><span class="ingr-name" style="width:55px;">Sun</span><div class="ingr-track"><div class="ingr-fill" style="width:80%;background:var(--red-soft)"></div></div><span class="ingr-val">400 guests</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header" style="grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1.2fr;"><span>Day</span><span>Guests</span><span>Total Waste</span><span>Waste/Cover</span><span>Cost/Cover</span><span>vs Weekly Avg</span></div>
+        <div class="table-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc">Monday</div><div class="cell-sm">360</div><div class="cell-sm">40.3 kg</div><div class="cell-sm">112 g</div><div class="cell-sm">€1.38</div><div class="s-dn">↘ −7%</div></div>
+        <div class="table-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc">Tuesday</div><div class="cell-sm">420</div><div class="cell-sm">47.0 kg</div><div class="cell-sm">112 g</div><div class="cell-sm">€1.46</div><div style="font-size:13px;color:var(--gray-400);">— avg</div></div>
+        <div class="table-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc">Wednesday</div><div class="cell-sm">350</div><div class="cell-sm">34.6 kg</div><div class="cell-sm">99 g</div><div class="cell-sm">€1.22</div><div class="s-dn">↘ −16%</div></div>
+        <div class="table-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc">Thursday</div><div class="cell-sm">450</div><div class="cell-sm">53.5 kg</div><div class="cell-sm">119 g</div><div class="cell-sm">€1.58</div><div class="s-up">↗ +8%</div></div>
+        <div class="table-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc">Friday</div><div class="cell-sm">500</div><div class="cell-sm">63.0 kg</div><div class="cell-sm">126 g</div><div class="cell-sm">€1.72</div><div class="s-up">↗ +18%</div></div>
+        <div class="table-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc">Saturday</div><div class="cell-sm">480</div><div class="cell-sm">57.6 kg</div><div class="cell-sm">120 g</div><div class="cell-sm">€1.62</div><div class="s-up">↗ +11%</div></div>
+        <div class="table-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1.2fr;"><div class="row-desc">Sunday</div><div class="cell-sm">400</div><div class="cell-sm">58.0 kg</div><div class="cell-sm">145 g</div><div class="cell-sm">€1.94</div><div class="s-up" style="color:var(--red-soft);">↗ +33%</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--gray-400);margin-top:10px;padding:10px 14px;background:rgba(77,184,150,0.07);border-radius:8px;border-left:3px solid var(--teal-bright);">💡 <strong>AI Insight:</strong> Sunday shows the highest waste per cover (+33%). Consider reducing Sunday buffet prep quantities by 15% — potential saving of <strong>€184/week</strong>.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODALS -->
+
+<!-- Set Action Modal -->
+<div class="modal-overlay" id="modal-action">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-action')">✕</button>
+    <div class="modal-title">Set action</div>
+    <div class="modal-sub">Set the start date and duration for your action. Tracking begins from the start date and ends after the selected number of weeks.</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Start date</label><select class="form-ctrl"><option>📅 5/3/2025</option></select></div>
+      <div class="form-group"><label class="form-label">Duration</label><select class="form-ctrl"><option>4 weeks → 3/4/2025</option><option>2 weeks</option><option>6 weeks</option><option>8 weeks</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Type of action</label><select class="form-ctrl"><option>🔄 Repurpose food waste</option><option>🍽 Adjust serving method</option><option>⚖ Portion control</option><option>📅 Preparation forecasting</option><option>🛒 Purchase optimization</option></select></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-ctrl" rows="3" style="resize:none">Turn leftover bagels into croutons: cut into cubes, toss with oil and herbs, bake at 180°C for 10 minutes. Great as a topping for soups or salads.</textarea></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-action')">Cancel</button>
+      <button class="btn-submit" onclick="submitAction()">✓ Add action</button>
+    </div>
+  </div>
+</div>
+
+<!-- Purchase Detail Modal -->
+<div class="modal-overlay" id="modal-purchase">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-purchase')">✕</button>
+    <div class="pd-img" id="pd-img">🥩</div>
+    <div class="modal-title" id="pd-title">Beef — Purchase Recommendation</div>
+    <div class="modal-sub">Based on 420 expected guests next week and your 8-week waste trend, Orbisk AI recommends adjusting your order to achieve near-zero waste on this ingredient.</div>
+    <div class="d-stat-row">
+      <div class="d-stat"><div class="d-stat-lbl">Suggested order</div><div class="d-stat-val g" id="pd-sug">18 kg</div></div>
+      <div class="d-stat"><div class="d-stat-lbl">Usual order</div><div class="d-stat-val" id="pd-usu">25 kg</div></div>
+      <div class="d-stat"><div class="d-stat-lbl">Est. savings</div><div class="d-stat-val g" id="pd-sav">€84</div></div>
+      <div class="d-stat"><div class="d-stat-lbl">Proj. waste</div><div class="d-stat-val" id="pd-was">~0.5 kg</div></div>
+    </div>
+    <div class="conf-section">
+      <div class="conf-hdr"><span class="conf-title">🤖 AI Confidence Score</span><span class="conf-val" id="pd-cpct">92%</span></div>
+      <div class="cbar"><div class="cfill" id="pd-cfill" style="width:92%"></div></div>
+      <div class="conf-note">Based on 8 weeks of consistent waste data. Higher confidence = more reliable recommendation.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('modal-purchase')">✕ Reject</button>
+      <button class="btn-submit" onclick="submitPurchase()">🛒 Approve &amp; Add to Order Plan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><span id="toast-msg">✅ Action added!</span></div>
+
+<script>
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const pages = {
+      overview:    { id: 'page-overview',    nav: 'nav-overview',  title: 'Overview', sub: '— Performance summary' },
+      actions:     { id: 'page-actions',     nav: 'nav-actions',   title: 'Actions', sub: '— Track your impact' },
+      suggestions: { id: 'page-suggestions', nav: 'nav-actions',   title: 'Action Suggestions', sub: '— Powered by Orbisk AI' },
+      pictures:    { id: 'page-pictures',    nav: 'nav-pictures',  title: 'Pictures', sub: '— Waste photo log' },
+      indetail:    { id: 'page-indetail',    nav: 'nav-indetail',  title: 'In Detail', sub: '— Ingredient breakdown' },
+      impact:      { id: 'page-impact',      nav: 'nav-impact',    title: 'Impact', sub: '— Sustainability reporting' },
+      hqview:      { id: 'page-hqview',      nav: 'nav-hqview',    title: 'HQ View', sub: '— Multi-location' },
+      guests:      { id: 'page-guests',      nav: 'nav-guests',    title: 'Guests', sub: '— Per-cover analytics' },
+      purchase:    { id: 'page-purchase',    nav: 'nav-purchase',  title: 'Purchase Plan', sub: '— Net Zero Waste 🆕' },
+    };
+    const cfg = pages[name]; if (!cfg) return;
+    document.getElementById(cfg.id).classList.add('active');
+    if (cfg.nav) document.getElementById(cfg.nav).classList.add('active');
+    document.getElementById('topbar-title').innerHTML = `${cfg.title} <span class="topbar-sub">${cfg.sub}</span>`;
+  }
+
+  function setTab(el) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  document.querySelectorAll('.modal-overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+  });
+
+  function openPurchaseModal(name, emoji, sug, usu, sav, conf, waste) {
+    document.getElementById('pd-img').textContent = emoji;
+    document.getElementById('pd-title').textContent = `${name} — Purchase Recommendation`;
+    document.getElementById('pd-sug').textContent = sug;
+    document.getElementById('pd-usu').textContent = usu;
+    document.getElementById('pd-sav').textContent = sav;
+    document.getElementById('pd-was').textContent = waste;
+    document.getElementById('pd-cpct').textContent = conf + '%';
+    document.getElementById('pd-cfill').style.width = conf + '%';
+    openModal('modal-purchase');
+  }
+
+  function submitAction() { closeModal('modal-action'); showToast('✅ Action added! You can find it on the actions page.'); }
+  function submitPurchase() { closeModal('modal-purchase'); showToast('🛒 Purchase plan updated! Quantities adjusted for next week.'); }
+
+  function rejectCard(btn) {
+    const card = btn.closest('.scard');
+    card.style.transition = 'all 0.3s'; card.style.opacity = '0'; card.style.transform = 'scale(0.9)';
+    setTimeout(() => { card.style.display = 'none'; showToast('❌ Suggestion dismissed.'); }, 300);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  showPage('actions');
+</script>
+</body>
+</html>
